@@ -96,3 +96,7 @@ ENV/
 
 ### VisualStudioCode ###
 .vscode/*
+
+
+### Config ###
+*/config.py
