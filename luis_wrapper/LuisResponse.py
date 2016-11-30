@@ -1,4 +1,5 @@
 
+
 '''
 Create an instance of the instance class if the values for the instance
 exists in the value_dict.
@@ -8,45 +9,54 @@ parameters:
     key: the key used to acces the class values.
     is_list: if true a list of objects will be created.
              if false a single object is created.
-    '''
+'''
 def _create_instance(instance_class, value_dict: dict, key: str, is_list=False):
     try:
         values = value_dict[key]
     except KeyError:
-        return None
+        result = None
+    except TypeError:
+        raise TypeError("Value_dict cannot be None")
     else:
-        if is_list:
-            return [instance_class(x) for x in values]
+        if not values:
+            result = None
+        elif is_list:
+            if not isinstance(values, list):
+                raise TypeError('Expected a list but was given a single element')
+            result = [instance_class(x) for x in values]
         else:
-            return instance_class(values)
+            if isinstance(values, list):
+                raise TypeError('Expected a single element but was given a list')
+            result = instance_class(values)
+    return result
 
 
 class Response:
+    need_more_info = False
+
     def __init__(self, response: dict):
         self.json = response
         self.query = response['query']
         self.top_scoring_intent = Intent(response['topScoringIntent'])
         self.intents = [Intent(i) for i in response['intents']]
-        self.entities = [Entity(e) for e in response['entities']]
-        try:
-            self.dialog = Dialog(response['dialog'])
-        except KeyError:
-            self.dialog = None
-            self.need_more_info = False
-        else:
+        self.entities = _create_instance(Entity, response, 'entities', True)
+        self.dialog = _create_instance(Dialog, response, 'dialog')
+        if self.dialog:
             self.need_more_info = self.dialog.status != 'Finished'
 
-
 class Intent:
+    triggered_action = None
     def __init__(self, intent: dict):
         self.name = intent['intent']
         self.score = intent['score']
-        self.actions = [Action(a) for a in intent['actions']]
+        self.actions = _create_instance(Action, intent, 'actions', True)
         # I am asuming that only one action can be triggered at a time
-        for a in self.actions:
-            if a.triggered:
-                self.triggered_action = a
-                break
+        if self.actions:
+            for a in self.actions:
+                if a.triggered:
+                    self.triggered_action = a
+                    break
+
 
 
 class Entity:
@@ -80,7 +90,7 @@ class Parameter:
         self.name = parameter['name']
         self.type = parameter['type']
         self.required = parameter['required']
-        self.value = Entity[parameter['value']]
+        self.value = _create_instance(Entity, parameter, 'value') #  Entity[parameter['value']]
 
     def __str__(self):
         return 'Parameter - {}'.format(self.name)
