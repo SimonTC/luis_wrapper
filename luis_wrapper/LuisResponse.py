@@ -48,7 +48,8 @@ class Entity:
         self.end_index = entity['endIndex']
         self.score = entity['score']
         try:
-            self.resolution = entity['resolution']  # Not sure what this might return
+            # TODO: Figure out what kind of object the resolution is
+            self.resolution = entity['resolution']
         except KeyError:
             self.resolution = None
 
@@ -63,7 +64,7 @@ class Action:
 class Dialog:
     def __init__(self, dialog: dict):
         self.context_id = dialog['contextId']
-        self.status = dialog['status'] #TODO: change to enum or something
+        self.status = dialog['status']  # TODO: change to enum or something
         if self.status != 'Finished':
             self.prompt = dialog['prompt']
             self.name = dialog['parameterName']
@@ -82,4 +83,3 @@ class Parameter:
 
     def __str__(self):
         return 'Parameter - {}'.format(self.name)
-

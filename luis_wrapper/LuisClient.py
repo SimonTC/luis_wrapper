@@ -3,9 +3,11 @@ import config
 from LuisResponse import Response
 import urllib
 
+
 class Conversation:
     _base_url_map = (
-        'https://api.projectoxford.ai/luis/v2.0/apps/{}?subscription-key={}&q={}&verbose={}')
+        'https://api.projectoxford.ai/luis/v2.0/apps/'
+        '{}?subscription-key={}&q={}&verbose={}')
 
     _reply_url_map = '&contextid={}&forceset={}'
 
@@ -49,7 +51,10 @@ class Conversation:
         r.raise_for_status()
         return Response(r.json())
 
-    def reply(self, text: str, parameter_name: str, conversation_id: str = None) -> Response:
+    def reply(self,
+              text: str,
+              parameter_name: str,
+              conversation_id: str = None) -> Response:
         current_conversation = conversation_id or self.conversation_id
         if not current_conversation:
             raise TypeError("Conversation id must be set")
@@ -86,24 +91,26 @@ class Conversation:
         answer = input('>> ')
         return answer
 
+
 class Client:
 
     def __init__(self, app_id: str, subscription_key: str):
         self.app_id = app_id
         self.subscription_key = subscription_key
 
-    """
-    set verbose to false if you just want to receive the most important information
-    """
     def analyze(self, text: str, verbose: bool = True) -> Conversation:
-
-        conversation = Conversation(self.app_id, self.subscription_key, verbose=verbose)
+        """
+        set verbose to false if you just want to
+        receive the most important information
+        """
+        conversation = Conversation(
+            self.app_id, self.subscription_key, verbose=verbose)
         conversation.start_conversation(text)
         return conversation
 
     def _get_response(self, url: str) -> Response:
         r = requests.get(url)
-        r.raise_for_status();
+        r.raise_for_status()
         return Response(r.json())
 
 
@@ -117,4 +124,3 @@ if __name__ == '__main__':
         conversation = client.analyze(text)
         intent_name = conversation.last_response.top_scoring_intent.name
         print('Your intent was {}'.format(intent_name))
-
