@@ -40,5 +40,5 @@ class Client:
 
 if __name__ == '__main__':
     client = Client(APP_ID, SUBSCRIPTION_KEY)
-    response = client.analyze("This")
-    print(response.top_scoring_intent)
+    response = client.analyze("get me from tampere to london")
+    print(response.top_scoring_intent.name)
