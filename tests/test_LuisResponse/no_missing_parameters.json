@@ -1,0 +1,125 @@
+{
+  "Response": {
+    "query": "what is the weather in copenhagen",
+    "topScoringIntent": {
+      "intent": "GetWeather",
+      "score": 0.9999852,
+      "actions": [
+        {
+          "triggered": true,
+          "name": "GetWeather",
+          "parameters": [
+            {
+              "name": "Location",
+              "type": "Location",
+              "required": true,
+              "value": null
+            }
+          ]
+        }
+      ]
+    },
+    "intents": [
+      {
+      "intent": "GetWeather",
+      "score": 0.9999852,
+      "actions": [
+        {
+          "triggered": true,
+          "name": "GetWeather",
+          "parameters": [
+            {
+              "name": "Location",
+              "type": "Location",
+              "required": true,
+              "value": null
+            }
+          ]
+        }
+      ]
+    }
+    ],
+    "entities": [
+      {
+        "entity": "copenhagen",
+        "type": "Location",
+        "startIndex": 23,
+        "endIndex": 32,
+        "score": 0.9613867,
+        "resolution": {}
+      }
+    ],
+    "dialog": {
+      "contextId": "d7c1f056-d620-4416-9c48-cb713ad7ca4c",
+      "status": "Finished"
+    }
+},
+  "Intent": {
+    "intent": "GetWeather",
+    "score": 0.9999852,
+    "actions": [
+      {
+        "triggered": true,
+        "name": "GetWeather",
+        "parameters": [
+          {
+            "name": "Location",
+            "type": "Location",
+            "required": true,
+            "value": [
+              {
+                "entity": "copenhagen",
+                "type": "Location",
+                "resolution": {}
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Entity": {
+    "entity": "ham",
+    "type": "Topping",
+    "startIndex": 24,
+    "endIndex": 26,
+    "score": 0.9986652
+  },
+  "Action": {
+    "triggered": true,
+    "name": "GetWeather",
+    "parameters": [
+      {
+        "name": "Location",
+        "type": "Location",
+        "required": true,
+        "value": [
+          {
+            "entity": "copenhagen",
+            "type": "Location",
+            "resolution": {}
+          }
+        ]
+      }
+    ]
+  },
+  "Dialog": {
+    "prompt": "Where",
+    "parameterName": "Location",
+    "parameterType": "Location",
+    "contextId": "8f942933-756e-4b73-b8b5-518ad3922b8f",
+    "status": "Question"
+  },
+  "Parameter": {
+    "name": "Location",
+    "type": "Location",
+    "required": true,
+    "value": [
+      {
+        "entity": "copenhagen",
+        "type": "Location",
+        "resolution": {}
+      }
+    ]
+  }
+}

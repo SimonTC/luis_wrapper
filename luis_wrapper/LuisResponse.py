@@ -64,7 +64,6 @@ class Intent:
         Will be none if no actions have been triggered or no actions exists for this intent
 
     """
-    triggered_action = None
 
     def __init__(self, intent: dict):
         """
@@ -194,6 +193,10 @@ class Dialog:
             self.prompt = dialog['prompt']
             self.name = dialog['parameterName']
             self.parameter_type = dialog['parameterType']
+        else:
+            self.prompt = None
+            self.name = None
+            self.parameter_type = None
 
 
 class Parameter:
