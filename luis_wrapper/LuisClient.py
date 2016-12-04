@@ -1,6 +1,6 @@
 import requests
-import config
-from LuisResponse import Response
+from luis_wrapper import config
+from luis_wrapper.LuisResponse import Response
 import urllib
 
 
@@ -130,7 +130,6 @@ class Conversation:
         response = self._get_response(url)
         if response.need_more_info:
             self.conversation_id = response.dialog.context_id
-        self.current_response = response
         self.responses.append(response)
         self.last_response = response
         return response
