@@ -36,8 +36,12 @@ class Response:
         self.json = response
         self.query = response['query']
         self.top_scoring_intent = Intent(response['topScoringIntent'])
-        self.intents = [Intent(i) for i in response['intents']]
+        # Creating the entities has to be done before creating intents.
+        # The Actions in created in an intent needs to be able to perform
+        # A lookup in the entity list
         self.entities = [Entity(e) for e in response['entities']]
+        self.intents = [Intent(i) for i in response['intents']]
+
         try:
             self.dialog = Dialog(response['dialog'])
         except KeyError:
@@ -82,17 +86,45 @@ class Intent:
             self.actions = None
             self.triggered_action = None
         else:
-            self._find_triggered_action()
+            self.triggered_action = self._find_triggered_action()
 
     def _find_triggered_action(self):
-        self.triggered_action = None
-        for a in self.actions:
-            if a.triggered:
-                self.triggered_action = a
-                break
+        # Currently there can only be one action per Intent, but it might change in the future
+        assert len(self.actions) == 1
+        return self.actions[0]
 
 
-class Entity:
+class BaseEntity:
+    """A class representing a basic LUIS entity without information about placement and score.
+
+    Attributes
+    ----------
+    type : str
+        The entity type
+    value : str
+        The value of the entity
+    resolution: str
+        Not sure what this is
+        # TODO: Figure out what kind of object the resolution is
+    """
+    def __init__(self, entity: dict):
+        """
+
+        Parameters
+        ----------
+        entity : dict
+            Dictionary containing the values needed for initializing the BaseEntity.
+            The values has to be immediately accessible from the dictionary.
+        """
+        self.type = entity['type']
+        self.value = entity['entity']
+        try:
+            self.resolution = entity['resolution']
+        except KeyError:
+            self.resolution = None
+
+
+class Entity(BaseEntity):
     """A class representing a LUIS entity
 
     Attributes
@@ -117,18 +149,14 @@ class Entity:
         Parameters
         ----------
         entity : dict
-            Dictionary containing the values needed for initializing the Parameter.
+            Dictionary containing the values needed for initializing the Entity.
             The values has to be immediately accessible from the dictionary.
         """
-        self.type = entity['type']
-        self.value = entity['entity']
+        super(Entity, self).__init__(entity)
         self.start_index = entity['startIndex']
         self.end_index = entity['endIndex']
         self.score = entity['score']
-        try:
-            self.resolution = entity['resolution']
-        except KeyError:
-            self.resolution = None
+
 
 
 class Action:
@@ -228,7 +256,9 @@ class Parameter:
         self.type = parameter['type']
         self.required = parameter['required']
         try:
-            self.value = [Entity(e) for e in parameter['value']]
+            self.value = [BaseEntity(e) for e in parameter['value']]
+        except KeyError:
+            self.value = None
         except TypeError:
             self.value = None
 

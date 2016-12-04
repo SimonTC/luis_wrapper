@@ -1,0 +1,26 @@
+{
+  "NoMissingParameters": {
+    "intent": "GetWeather",
+    "score": 0.9999852,
+    "actions": [
+      {
+        "triggered": true,
+        "name": "GetWeather",
+        "parameters": [
+          {
+            "name": "Location",
+            "type": "Location",
+            "required": true,
+            "value": [
+              {
+                "entity": "copenhagen",
+                "type": "Location",
+                "resolution": {}
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

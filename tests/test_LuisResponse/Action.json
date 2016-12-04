@@ -1,0 +1,20 @@
+{
+  "NoMissingParameters": {
+    "triggered": true,
+    "name": "GetWeather",
+    "parameters": [
+      {
+        "name": "Location",
+        "type": "Location",
+        "required": true,
+        "value": [
+          {
+            "entity": "copenhagen",
+            "type": "Location",
+            "resolution": {}
+          }
+        ]
+      }
+    ]
+  }
+}
