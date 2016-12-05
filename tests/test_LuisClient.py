@@ -1,15 +1,14 @@
 import pytest
-#import context
 from luis_wrapper.LuisClient import Client
 
-class LuisClientTest:
+
+class TestLuisClient:
 
     @pytest.fixture
     def client(self):
         app_id = "An app id"
         subscription_key = "A subscription key"
         return Client(app_id, subscription_key)
-
 
     def test_ParametetersAreSetCorrectly(self):
         app_id = "An app id"
@@ -26,8 +25,10 @@ class LuisClientTest:
             client.analyze(input)
 
 
-    def test_Given_NoneAsString_When_CallingAnalyze_Then_ExceptionIsRaised(self):
-        assert False
+    def test_Given_NoneAsString_When_CallingAnalyze_Then_ExceptionIsRaised(self, client):
+        input = None
+        with pytest.raises(ValueError) as err:
+            client.analyze(input)
 
     def test_Given_NonEmptyString_When_CallingAnalyze_Then_ConversationIsReturned(self):
         assert False
