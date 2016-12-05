@@ -25,9 +25,20 @@ class Conversation:
             self.id = None
 
     def conversation_is_finished(self) -> bool:
+        """Check if more information is needed before this conversation is finished.
+
+        Looks at the status of the last response received.
+
+        Returns
+        -------
+        bool
+            True if no more information is needed
+            False if LUIS still needs information
+        """
         return not self.last_response.need_more_info
 
     def add_response(self, response: Response):
+        """Add response to the list of responses"""
         logger.debug('Adding response')
         self.responses.append(response)
         logger.debug('Response list length is now {}'.format(len(self.responses)))
@@ -63,6 +74,8 @@ class Client:
 
         Request an analysis of the given text from LUIS. If a conversation is given, the text is treated as an
         answer to the last response from LUIS.
+        Do not give a conversation object if you want to start a new analysis.
+        Text sent when a Conversation is given is only used to answer questions asked by the LUIS model.
 
         Parameters
         ----------
@@ -87,30 +100,36 @@ class Client:
         return reply
 
     def _ask(self, text: str) -> Conversation:
+        """Send new query to LUIS"""
         url = self._build_base_url(text)
         response = self._get_response(url)
         return Conversation(response)
 
     def _reply(self, text: str, conversation: Conversation) -> Conversation:
+        """Send QUery to LUIS continuing an ongoing conversation"""
         url = self._build_reply_url(text, conversation.id)
         response = self._get_response(url)
         conversation.add_response(response)
         return conversation
 
     def _get_response(self, url: str) -> Response:
+        """Connect to LUIS and parse response"""
         r = requests.get(url)
         r.raise_for_status()
         return Response(r.json())
 
     def _clean_text(self, text: str) -> str:
+        """Clean text so it can be sent to LUIS"""
         clean_text = text.strip()
         clean_text = urllib.parse.quote_plus(clean_text)
         return clean_text
 
     def _build_base_url(self, text: str):
+        """Build the base url used when sending queries to LUIS"""
         return self._base_url_map.format(self.app_id, self.subscription_key, text)
 
     def _build_reply_url(self, text: str, conversation_id: str):
+        """Build url used for sending queries to LUIS that responds to an earlier response from LUIS"""
         base_url = self._build_base_url(text)
         reply_url = self._reply_url_map.format(conversation_id)
         return '{}{}'.format(base_url, reply_url)
