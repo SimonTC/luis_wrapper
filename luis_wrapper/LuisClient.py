@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class Conversation:
-
+    """A wrapper class around one conversation with LUIS"""
     @property
     def last_response(self) -> Response:
         return self.responses[-1]
@@ -45,6 +45,7 @@ class Conversation:
 
 
 class Client:
+    """A client used to communicate with a LUIS model"""
     _base_url_map = (
         'https://api.projectoxford.ai/luis/v2.0/apps/'
         '{}?subscription-key={}&q={}&verbose=True')
