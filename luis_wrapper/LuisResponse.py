@@ -22,8 +22,6 @@ class Response:
         Dialog attached to the response.
         Will be None unless more information is requested or this is part of an ongoing conversation
     """
-    need_more_info = False
-
     def __init__(self, response: dict):
         """
 
