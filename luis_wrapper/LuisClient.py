@@ -134,3 +134,19 @@ class Client:
         base_url = self._build_base_url(text)
         reply_url = self._reply_url_map.format(conversation_id)
         return '{}{}'.format(base_url, reply_url)
+
+if __name__ == '__main__':
+    client = Client(config.APP_ID, config.SUBSCRIPTION_KEY)
+    while True:
+        print("What is your command?")
+        command = input('>> ')
+        if command in ['stop', 'exit']:
+            break
+        conversation = client.analyze(command)
+        while not conversation.conversation_is_finished():
+            print(conversation.last_response.dialog.prompt)
+            command = input('>> ')
+            conversation = client.analyze(command, conversation)
+        intent_name = conversation.last_response.top_scoring_intent.name
+        print("Your intent was '{}'".format(intent_name))
+    print("Conversation with LUIS has stopped")
