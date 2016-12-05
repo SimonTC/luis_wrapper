@@ -125,7 +125,6 @@ class Conversation:
             The parsed response from LUIS
 
         """
-        query = self._clean_text(query)
         url = self._build_base_url(query)
         response = self._get_response(url)
         if response.need_more_info:
