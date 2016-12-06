@@ -4,7 +4,6 @@ from luis_wrapper.LuisResponse import Response
 import urllib
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -136,6 +135,7 @@ class Client:
         return '{}{}'.format(base_url, reply_url)
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     client = Client(config.APP_ID, config.SUBSCRIPTION_KEY)
     while True:
         print("What is your command?")
