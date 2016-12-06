@@ -1,0 +1,14 @@
+{
+  "NoMissingParameters": {
+    "name": "Name of the parameter",
+    "type": "Type of the parameter",
+    "required": true,
+    "value": [
+      {
+        "entity": "copenhagen",
+        "type": "Location",
+        "resolution": {}
+      }
+    ]
+  }
+}

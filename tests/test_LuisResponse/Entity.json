@@ -1,0 +1,10 @@
+{
+  "NoMissingParameters": {
+    "entity": "copenhagen",
+    "type": "Location",
+    "startIndex": 23,
+    "endIndex": 32,
+    "score": 0.9613867,
+    "resolution": {}
+  }
+}
