@@ -11,6 +11,10 @@ setup(
     keywords = ['LUIS', 'NLP'],
     classifiers = [
         'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
     ],
     install_requires=['requests'],
     license='MIT'
