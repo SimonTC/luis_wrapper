@@ -3,6 +3,8 @@ from luis_wrapper import config
 from luis_wrapper.LuisResponse import Response
 import urllib
 import logging
+import aiohttp
+from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +135,66 @@ class Client:
         base_url = self._build_base_url(text)
         reply_url = self._reply_url_map.format(conversation_id)
         return '{}{}'.format(base_url, reply_url)
+
+
+class AsyncClient(Client):
+
+    async def analyze(self, text, conversation=None):
+        """Send a async request to LUIS to analyze the given text.
+
+        Request an async analysis of the given text from LUIS. If a conversation is given, the text is treated as an
+        answer to the last response from LUIS.
+        Do not give a conversation object if you want to start a new analysis.
+        Text sent when a Conversation is given is only used to answer questions asked by the LUIS model.
+
+        Parameters
+        ----------
+        text : str
+            The text to  be analyzed.
+            Cannot be None or only spaces
+        conversation : Conversation (None)
+            The conversation this request is part of
+
+        Returns
+        -------
+        Conversation
+            The conversation that result from this request to LUIS
+        """
+        clean_text = self._clean_text(text)
+        if not clean_text:
+            raise ValueError("Text cannot be empty")
+        if conversation:
+            reply = await self._reply(clean_text, conversation)
+        else:
+            reply = await self._ask(clean_text)
+        return reply
+
+    async def _ask(self, text: str) -> Conversation:
+        """Send new async query to LUIS"""
+        url = self._build_base_url(text)
+        response = await self._get_response(url)
+        return Conversation(response)
+
+    async def _reply(self, text: str, conversation: Conversation) -> Conversation:
+        """Send async query to LUIS continuing an ongoing conversation"""
+        url = self._build_reply_url(text, conversation.id)
+        response = await self._get_response(url)
+        conversation.add_response(response)
+        return conversation
+
+    async def _get_response(self, url: str) -> Response:
+        """Connect async to LUIS and parse response"""
+        with aiohttp.ClientSession() as session:
+            async with session.get(url) as r:
+                if r.status != 200:
+                    err_message = (
+                        'Request to LUIS failed with error code {}'.format(
+                            r.status))
+                    logger.error(err_message)
+                    raise HTTPError(err_message)
+
+                return await Response(r.json())
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
