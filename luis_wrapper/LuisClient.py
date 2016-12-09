@@ -122,6 +122,7 @@ class Client:
 
     def _clean_text(self, text: str) -> str:
         """Clean text so it can be sent to LUIS"""
+        logger.debug('Cleaning {}'.format(text))
         clean_text = text.strip()
         clean_text = urllib.parse.quote_plus(clean_text)
         return clean_text
@@ -160,8 +161,10 @@ class AsyncClient(Client):
         Conversation
             The conversation that result from this request to LUIS
         """
+        logger.debug('Start analysis of {}'.format(text))
         clean_text = self._clean_text(text)
         if not clean_text:
+            logger.debug('Text cannot be empty')
             raise ValueError("Text cannot be empty")
         if conversation:
             reply = await self._reply(clean_text, conversation)
@@ -171,12 +174,14 @@ class AsyncClient(Client):
 
     async def _ask(self, text: str) -> Conversation:
         """Send new async query to LUIS"""
+        logger.debug('Asking LUIS about {}'.format(text))
         url = self._build_base_url(text)
         response = await self._get_response(url)
         return Conversation(response)
 
     async def _reply(self, text: str, conversation: Conversation) -> Conversation:
         """Send async query to LUIS continuing an ongoing conversation"""
+        logger.debug('Replying to LUIS with {}'.format(text))
         url = self._build_reply_url(text, conversation.id)
         response = await self._get_response(url)
         conversation.add_response(response)
@@ -184,6 +189,7 @@ class AsyncClient(Client):
 
     async def _get_response(self, url: str) -> Response:
         """Connect async to LUIS and parse response"""
+        logger.debug('Starting async session with LUIS')
         with aiohttp.ClientSession() as session:
             async with session.get(url) as r:
                 if r.status != 200:
@@ -192,8 +198,9 @@ class AsyncClient(Client):
                             r.status))
                     logger.error(err_message)
                     raise HTTPError(err_message)
-
-                return await Response(r.json())
+                values = await r.json()
+                logger.debug('Response received')
+                return Response(values)
 
 
 if __name__ == '__main__':
