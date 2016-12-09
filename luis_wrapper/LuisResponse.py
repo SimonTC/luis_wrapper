@@ -48,6 +48,9 @@ class Response:
         else:
             self.need_more_info = self.dialog.status != 'Finished'
 
+    def to_json(self):
+        return self.json
+
 
 class Intent:
     """A class representing a LUIS intent

@@ -44,6 +44,12 @@ class Conversation:
         self.responses.append(response)
         logger.debug('Response list length is now {}'.format(len(self.responses)))
 
+    def to_json(self):
+        return {
+            'responses': [r.to_json() for r in self.responses],
+            'id': self.id
+        }
+
 
 class Client:
     """A client used to communicate with a LUIS model"""
