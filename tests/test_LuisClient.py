@@ -1,8 +1,9 @@
 import pytest
 
-from luis_wrapper.LuisClient import Client, Conversation
+from luis_wrapper.LuisClient import Client, Conversation, AsyncClient
 from luis_wrapper.LuisResponse import Response, Dialog
 from unittest.mock import MagicMock
+import asyncio
 
 
 @pytest.fixture(scope='function')
@@ -86,6 +87,55 @@ class TestClient:
 
     class FakeResponse:
         pass
+
+class TestAsyncClient:
+
+    @pytest.fixture
+    def async_client(self):
+        app_id = "An app id"
+        subscription_key = "A subscription key"
+        return AsyncClient(app_id, subscription_key)
+
+    async def call_analyze(self, async_client, text, conversation=None):
+        x = 1
+        coroutines = [async_client.analyze(text) for _ in range(x)]
+        completed, pending = await asyncio.wait(coroutines)
+        for item in completed:
+            assert isinstance(item, Conversation)
+
+    def test_Given_NonEmptyString_When_CallingAnalyze_Then_ConversationIsReturned(self, async_client, monkeypatch):
+        monkeypatch.setattr("aiohttp.ClientSession.get", lambda x,y: self.FakeAResponse())
+        monkeypatch.setattr("luis_wrapper.LuisClient.Response", lambda _: self.FakeResponse())
+        text = "Hello there"
+
+        event_loop = asyncio.get_event_loop()
+        try:
+            event_loop.run_until_complete(self.call_analyze(async_client, text))
+        finally:
+            event_loop.close()
+
+    class FakeAResponse:
+        def __init__(self, *args):
+            pass
+
+        async def temp_function(self):
+            pass
+
+        def __aexit__(self):
+            return self.temp_function
+
+        def __aenter__(self):
+            return self.temp_function
+
+    class FakeResponse:
+        pass
+
+    # def test_Given_ConversationGiven_When_CallingAnalyze_Then_SameConversationIsReturned(self, async_client, conversation, monkeypatch):
+    #     monkeypatch.setattr("requests.get", lambda _: self.FakeRequestsResponse())
+    #     monkeypatch.setattr("luis_wrapper.LuisClient.Response", lambda _: self.FakeResponse())
+    #     conv = conversation
+    #     new_conversation = client.analyze("Hello", conv)
+    #     assert conv == new_conversation
 
 
 class TestConversation:
