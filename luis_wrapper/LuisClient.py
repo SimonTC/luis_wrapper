@@ -50,6 +50,10 @@ class Conversation:
             'id': self.id
         }
 
+    def from_json(self, json_obj):
+        self.id = json_obj['id']
+        self.responses = [Response(r) for r in json_obj['responses']]
+
 
 class Client:
     """A client used to communicate with a LUIS model"""
