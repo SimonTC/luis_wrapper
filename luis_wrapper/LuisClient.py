@@ -1,5 +1,4 @@
 import requests
-from luis_wrapper import config
 from luis_wrapper.LuisResponse import Response
 import urllib
 import logging
@@ -214,6 +213,7 @@ class AsyncClient(Client):
 
 
 if __name__ == '__main__':
+    from luis_wrapper import config
     logging.basicConfig(level=logging.DEBUG)
     client = Client(config.APP_ID, config.SUBSCRIPTION_KEY)
     while True:
