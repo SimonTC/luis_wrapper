@@ -5,12 +5,6 @@ A python wrapper for the Microsoft LUIS service (http:www.luis.ai).
 Use this wrapper to easily connect to LUIS and parse the responses returned from your models.
 
 
-Installation
-------------
-
-pip install luis_wrapper
-
-
 Usage example
 -------------
 * Create user at luis.ai
